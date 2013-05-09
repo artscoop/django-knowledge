@@ -1,4 +1,4 @@
-from knowledge import settings
+from knowledge import settings as knowledge_settings
 
 import django
 from django.db import models
@@ -47,7 +47,7 @@ class KnowledgeBase(models.Model):
 
     user = models.ForeignKey('auth.User' if django.VERSION < (1, 5, 0) else settings.AUTH_USER_MODEL, blank=True,
                              null=True, db_index=True)
-    alert = models.BooleanField(default=settings.ALERTS,
+    alert = models.BooleanField(default=knowledge_settings.ALERTS,
         verbose_name=_('Alert'),
         help_text=_('Check this if you want to be alerted when a new'
                         ' response is added.'))
@@ -69,7 +69,7 @@ class KnowledgeBase(models.Model):
             # first time because no id
             self.public(save=False)
 
-        if settings.AUTO_PUBLICIZE and not self.id:
+        if knowledge_settings.AUTO_PUBLICIZE and not self.id:
             self.public(save=False)
 
         super(KnowledgeBase, self).save(*args, **kwargs)
@@ -177,7 +177,7 @@ class Question(KnowledgeBase):
     def get_absolute_url(self):
         from django.template.defaultfilters import slugify
 
-        if settings.SLUG_URLS:
+        if knowledge_settings.SLUG_URLS:
             return ('knowledge_thread', [self.id, slugify(self.title)])
         else:
             return ('knowledge_thread_no_slug', [self.id])
